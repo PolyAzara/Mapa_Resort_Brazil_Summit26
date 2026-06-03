@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa Interno · Brazil Summit FY26</title>
+  <style>
+    :root {
+      --preto:    #0A0A0A;
+      --branco:   #FFFFFF;
+      --cinza-lt: #F5F5F5;
+      --cinza-bd: #E0E0E0;
+      --cinza-md: #666666;
+      --texto:    #1A1A1A;
+      --radius:   12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--cinza-lt);
+      color: var(--texto);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--branco);
+      text-align: center;
+      padding: 40px 24px 36px;
+      border-bottom: 1px solid var(--cinza-bd);
+    }
+
+    header img.brand-logo {
+      max-width: 380px;
+      width: 72%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 20px 60px;
+    }
+
+    /* ── SECTION TITLE ── */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cinza-md);
+      margin-bottom: 16px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--cinza-bd);
+    }
+
+    /* ── MAP VIEWER ── */
+    .map-card {
+      background: var(--branco);
+      border-radius: var(--radius);
+      border: 1px solid var(--cinza-bd);
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,.07);
+      margin-bottom: 40px;
+    }
+    .map-toolbar {
+      background: var(--preto);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .map-toolbar span {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-r { background: #FF5F57; }
+    .dot-y { background: #FFBD2E; }
+    .dot-g { background: #28C840; }
+    .map-toolbar-title {
+      color: rgba(255,255,255,.6);
+      font-size: 12px;
+      margin-left: 8px;
+      letter-spacing: .5px;
+    }
+    .map-embed {
+      width: 100%;
+      height: clamp(400px, 70vh, 780px);
+      border: none;
+      display: block;
+      background: #f0f0f0;
+    }
+
+    /* ── LEGEND GRID ── */
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .legend-item {
+      background: var(--branco);
+      border: 1px solid var(--cinza-bd);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: box-shadow .2s, border-color .2s, transform .15s;
+    }
+    .legend-item:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,.10);
+      border-color: var(--preto);
+      transform: translateY(-1px);
+    }
+    .legend-num {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--preto);
+      color: var(--branco);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .legend-num.letter {
+      background: var(--cinza-md);
+    }
+    .legend-label {
+      font-size: 13.5px;
+      line-height: 1.4;
+      padding-top: 5px;
+      color: var(--texto);
+    }
+    .cat-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cinza-md);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* ── BUILDINGS ── */
+    .buildings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .building-card {
+      background: var(--preto);
+      border-radius: 8px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--branco);
+    }
+    .building-letter {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.15);
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .building-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .building-name small {
+      display: block;
+      font-size: 11px;
+      opacity: .55;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--preto);
+      color: rgba(255,255,255,.45);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    footer strong {
+      color: var(--branco);
+      letter-spacing: 2px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      header { padding: 40px 16px 36px; }
+      .legend-grid { grid-template-columns: 1fr; }
+      .buildings-grid { grid-template-columns: repeat(2, 1fr); }
+      .brand-together { letter-spacing: -1px; }
+      .brand-name { letter-spacing: 0.3em; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <img
+    class="brand-logo"
+    src="brand.jpg"
+    alt="Thinking Different Together — Brazil Summit FY26"
+  />
+</header>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- PDF VIEWER -->
+  <p class="section-title">🗺️ Mapa Interativo</p>
+  <div class="map-card">
+    <div class="map-toolbar">
+      <span class="dot-r"></span>
+      <span class="dot-y"></span>
+      <span class="dot-g"></span>
+      <span class="map-toolbar-title">Mapa Interno do Resort — Brazil Summit FY26</span>
+    </div>
+    <object
+      class="map-embed"
+      data="Mapa Interno Resort - ATUALIZADO EM 2022 (2).pdf"
+      type="application/pdf"
+    >
+      <div style="padding:40px;text-align:center;color:#888;font-size:14px;">
+        Seu navegador não suporta visualização de PDF diretamente.<br/>
+        <a href="Mapa Interno Resort - ATUALIZADO EM 2022 (2).pdf"
+           style="color:#0A0A0A;font-weight:700;margin-top:8px;display:inline-block;text-decoration:underline;">
+          📥 Clique aqui para baixar o mapa
+        </a>
+      </div>
+    </object>
+  </div>
+
+  <!-- LEGEND -->
+  <p class="section-title">📍 Legenda — Pontos de Interesse</p>
+  <div class="legend-grid">
+
+    <div class="legend-item">
+      <div class="legend-num">1</div>
+      <div class="legend-label"><span class="cat-label">Recepção</span>Recepção Cerejeira</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">2</div>
+      <div class="legend-label"><span class="cat-label">Recepção</span>Recepção Figueira</div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-num">3</div>
+      <div class="legend-label"><span class="cat-label">Gastronomia</span>Lake Bar</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">5</div>
+      <div class="legend-label"><span class="cat-label">Gastronomia</span>Lake Shore</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">6</div>
+      <div class="legend-label"><span class="cat-label">Gastronomia</span>Bar da Piscina</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">8</div>
+      <div class="legend-label"><span class="cat-label">Gastronomia</span>Espaço Gourmet</div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-num">4</div>
+      <div class="legend-label"><span class="cat-label">Espiritualidade</span>Capela</div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-num">12</div>
+      <div class="legend-label"><span class="cat-label">Piscinas</span>Piscina Paradise</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">13</div>
+      <div class="legend-label"><span class="cat-label">Piscinas</span>Piscina Lake</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">14</div>
+      <div class="legend-label"><span class="cat-label">Piscinas</span>Piscina aquecida coberta, saunas seca e a vapor</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">15</div>
+      <div class="legend-label"><span class="cat-label">Piscinas</span>Piscina infantil</div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-num">7</div>
+      <div class="legend-label"><span class="cat-label">Bem-estar</span>Quiosque Fitness</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">16</div>
+      <div class="legend-label"><span class="cat-label">Bem-estar</span>Club Med SPA</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">22</div>
+      <div class="legend-label"><span class="cat-label">Bem-estar</span>Fitness Center (Academia)</div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-num">9</div>
+      <div class="legend-label"><span class="cat-label">Eventos</span>Centro de Convenções – Espaço Girassol</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">10</div>
+      <div class="legend-label"><span class="cat-label">Eventos</span>Centro de Convenções – Espaço Orquídea</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">11</div>
+      <div class="legend-label"><span class="cat-label">Eventos</span>Centro de Convenções – Espaço Ipê</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">28</div>
+      <div class="legend-label"><span class="cat-label">Eventos</span>Teatro de Arena</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">35</div>
+      <div class="legend-label"><span class="cat-label">Eventos</span>Espaço Chez Bisutti</div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-num">17</div>
+      <div class="legend-label"><span class="cat-label">Serviços</span>Enfermaria</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">18</div>
+      <div class="legend-label"><span class="cat-label">Serviços</span>Boutique</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">19</div>
+      <div class="legend-label"><span class="cat-label">Serviços</span>Mini Club Med</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">20</div>
+      <div class="legend-label"><span class="cat-label">Serviços</span>Heliponto</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">21</div>
+      <div class="legend-label"><span class="cat-label">Serviços</span>Estacionamento</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">25</div>
+      <div class="legend-label"><span class="cat-label">Serviços</span>Bicicletário</div>
+    </div>
+
+    <div class="legend-item">
+      <div class="legend-num">23</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Arborismo</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">24</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Área náutica (Caiaque, Stand Up Paddle e Vela)</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">26</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Driving Range, Putting Green, Pitch & Putt</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">27</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Trapézio Volante</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">29</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Club House Paradise Golf</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">30</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Campo de Futebol</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">31</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Quiosque das Quadras</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">32</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Quadras Poliesportivas</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">33</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Quadras de Tênis Saibro</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-num">34</div>
+      <div class="legend-label"><span class="cat-label">Esportes & Atividades</span>Quadras de Beach Tennis</div>
+    </div>
+
+  </div>
+
+  <!-- BUILDINGS -->
+  <p class="section-title">🏨 Alas de Hospedagem</p>
+  <div class="buildings-grid">
+    <div class="building-card">
+      <div class="building-letter">A</div>
+      <div class="building-name">Cerejeira<small>Ala de Hospedagem</small></div>
+    </div>
+    <div class="building-card">
+      <div class="building-letter">B</div>
+      <div class="building-name">Macieira<small>Ala de Hospedagem</small></div>
+    </div>
+    <div class="building-card">
+      <div class="building-letter">C</div>
+      <div class="building-name">Figueira<small>Ala de Hospedagem</small></div>
+    </div>
+    <div class="building-card">
+      <div class="building-letter">D</div>
+      <div class="building-name">Amoreira<small>Ala de Hospedagem</small></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <strong>TOGETHER</strong> &nbsp;·&nbsp; B R A Z I L &nbsp; S U M M I T &nbsp; F Y 2 6 &nbsp;·&nbsp;
+  Para informações, dirija-se à recepção do resort.
+</footer>
+
+</body>
+</html>

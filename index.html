@@ -238,25 +238,37 @@
   <!-- PDF VIEWER -->
   <p class="section-title">🗺️ Mapa Interativo</p>
   <div class="map-card">
-    <div class="map-toolbar">
-      <span class="dot-r"></span>
-      <span class="dot-y"></span>
-      <span class="dot-g"></span>
-      <span class="map-toolbar-title">Mapa Interno do Resort — Brazil Summit FY26</span>
-    </div>
-    <object
+    <iframe
       class="map-embed"
-      data="Mapa Interno Resort - ATUALIZADO EM 2022 (2).pdf"
-      type="application/pdf"
+      src="Mapa Interno Resort - ATUALIZADO EM 2022 (2).pdf"
+    ></iframe>
+  </div>
+
+  <!-- DOWNLOAD BUTTON -->
+  <div style="text-align:center; margin-top:-24px; margin-bottom:48px;">
+    <a
+      href="Mapa Interno Resort - ATUALIZADO EM 2022 (2).pdf"
+      download
+      style="
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--preto);
+        color: var(--branco);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 12px 28px;
+        border-radius: 30px;
+        transition: opacity .2s;
+      "
+      onmouseover="this.style.opacity='.8'"
+      onmouseout="this.style.opacity='1'"
     >
-      <div style="padding:40px;text-align:center;color:#888;font-size:14px;">
-        Seu navegador não suporta visualização de PDF diretamente.<br/>
-        <a href="Mapa Interno Resort - ATUALIZADO EM 2022 (2).pdf"
-           style="color:#0A0A0A;font-weight:700;margin-top:8px;display:inline-block;text-decoration:underline;">
-          📥 Clique aqui para baixar o mapa
-        </a>
-      </div>
-    </object>
+      📥 &nbsp;Baixar Mapa em PDF
+    </a>
   </div>
 
   <!-- LEGEND -->
